@@ -2,6 +2,7 @@ package com.endava.testing.tests;
 
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.thucydides.core.annotations.Managed;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,20 +35,26 @@ public class GrapeRipenessTest {
         driver.get(APP_URL);
     }
 
+    @After
+    public void close() {
+        driver.quit();
+    }
+
     @Test
     public void testGrapeRipeness() {
-
-        sleep(2);
-
+        sleep(1);
         selectFromMenu("Wines");
 
-        sleep(2);
+        sleep(1);
 
-        assertThat(getWinesNumber(), greaterThanOrEqualTo(6));
+        assertThat(getWinesNumber(), greaterThanOrEqualTo(7));
+        // assertTrue(getWinesNumber() >= 7);
         LOGGER.info("Wines: " + getWinesNumber());
 
-        assertThat(getVolume(), greaterThanOrEqualTo(2696));
+        assertThat(getVolume(), greaterThanOrEqualTo(2996));
         LOGGER.info("Volume: " + getVolume());
+        
+
     }
 
     private int getVolume() {
@@ -66,7 +73,8 @@ public class GrapeRipenessTest {
 
     private void selectFromMenu(String linkText) {
 
-        driver.findElement(MENU).findElement(By.linkText(linkText)).click();
+        driver.findElement(MENU)
+                .findElement(By.linkText(linkText)).click();
     }
 
     private void sleep(int seconds) {
