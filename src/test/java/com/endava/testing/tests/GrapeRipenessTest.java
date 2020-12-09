@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.Managed;
+import net.thucydides.core.annotations.WithTag;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -12,15 +13,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 @RunWith(SerenityRunner.class)
+@WithTag("UI")
 public class GrapeRipenessTest {
 
     public final Logger LOGGER = Logger.getLogger(getClass().getName());
@@ -32,7 +37,9 @@ public class GrapeRipenessTest {
     public static final By WINES_TYPES = By.cssSelector("li:nth-child(1)");
     public static final By WINES_VOLUMES = By.cssSelector("li:nth-child(2)");
 
-    public static final String GRAPE_NAME = "new_grape1231"; // schimba valoarea pentru a avea un nou tip de strugure
+    public static final By TABLE = By.cssSelector("table.App-table tbody");
+
+    public static final String GRAPE_NAME = "strugureSorin"; // schimba valoarea pentru a avea un nou tip de strugure
     public static final String GRAPE_QUANTITY = "12.0";
     public static final String GRAPE_AGE = "12";
     public static final String GRAPE_RIPENESS = "88.0"; // daca valoarea este pe 87.0 o sa avem butonul "pick & crush grapes"
@@ -84,7 +91,20 @@ public class GrapeRipenessTest {
         assertThat(getVolume(), greaterThanOrEqualTo(2696));
         LOGGER.info("Volume: " + getVolume());
 
+        selectFromMenu("Grapes");
 
+        clickButton(GRAPE_NAME);
+
+        sleep(3);
+
+        assertThat("We are not on must page, as expected.", verifyThatWeAreOnMust(), is(true));
+
+        LOGGER.info("Button was clicked.");
+    }
+
+    private boolean verifyThatWeAreOnMust() {
+
+        return driver.getCurrentUrl().contains("must");
     }
 
     private int getVolume() {
@@ -113,6 +133,20 @@ public class GrapeRipenessTest {
             Thread.sleep(seconds * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void clickButton(String grapeName) {
+
+        WebElement table = driver.findElement(TABLE);
+        List<WebElement> rows = table.findElements(By.tagName("tr"));
+
+        for (WebElement row : rows) {
+            if (row.findElement(By.cssSelector("td:nth-child(1)")).getText().contains(grapeName)) {
+                if (row.findElement(By.tagName("button")).isDisplayed()) {
+                    row.findElement(By.tagName("button")).click();
+                }
+            }
         }
     }
 }
