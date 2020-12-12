@@ -28,7 +28,7 @@ public class GrapeApiTest {
 
     public Response response;
 
-    public static final String GRAPE_NAME = "sorinTest7"; // schimba valoarea pentru a avea un nou tip de strugure
+    public static final String GRAPE_NAME = "oteleafelixgrape2"; // schimba valoarea pentru a avea un nou tip de strugure
 
     public static final float GRAPE_QUANTITY = 12;
     public static final int GRAPE_AGE = 5;
