@@ -1,5 +1,6 @@
 package com.endava.testing.tests;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import net.serenitybdd.junit.runners.SerenityRunner;
@@ -7,17 +8,21 @@ import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.Managed;
 import net.thucydides.core.annotations.WithTag;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,7 +33,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class GrapeRipenessTest {
 
     public final Logger LOGGER = Logger.getLogger(getClass().getName());
-
 
     public static final String APP_URL = "https://wineappui.azurewebsites.net/";
 
@@ -43,11 +47,16 @@ public class GrapeRipenessTest {
     public static final int GRAPE_AGE = 12;
     public static final float GRAPE_RIPENESS = 88; // daca valoarea este pe 87.0 o sa avem butonul "pick & crush grapes"
 
-    @Managed(driver = "chrome")
-    WebDriver driver;
+    @Managed
+    private static RemoteWebDriver driver;
 
     @Before
     public void setUp() {
+
+        WebDriverManager.chromedriver().setup();
+        driver = new ChromeDriver(getChromeOption());
+        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+        driver.manage().window().maximize();
 
         Map<String, Object> quantity = new HashMap<>();
         quantity.put("value", GRAPE_QUANTITY);
@@ -89,7 +98,7 @@ public class GrapeRipenessTest {
 
         selectFromMenu("Grapes");
         clickCrushButton(GRAPE_NAME);
-        sleep(1);
+        sleep(2);
 
         assertThat(getTypeCount(), is(mustCount + 1));
         assertThat(getVolume(), is(mustVolume + (GRAPE_QUANTITY * 50)));
@@ -169,5 +178,20 @@ public class GrapeRipenessTest {
         if (driver.findElement(By.cssSelector("button")).isDisplayed()) {
             driver.findElement(By.cssSelector("button")).click();
         }
+    }
+
+    protected static ChromeOptions getChromeOption() {
+
+        ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("--start-maximized");
+
+        if (!SystemUtils.IS_OS_WINDOWS && !SystemUtils.IS_OS_MAC) {
+            chromeOptions.addArguments("--no-sandbox"); // needed for Ubuntu
+            chromeOptions.addArguments("--headless");
+            chromeOptions.addArguments("window-size=1920,1080");
+        }
+
+        return chromeOptions;
+
     }
 }

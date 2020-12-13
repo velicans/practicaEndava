@@ -26,7 +26,7 @@ public class GrapeDeletionApiTest {
 
     public Response response;
 
-    public static final String GRAPE_NAME = "new_grape1231"; // schimba valoarea pentru a avea un nou tip de strugure
+    public static final String GRAPE_NAME = "strugureSorin2"; // schimba valoarea pentru a avea un nou tip de strugure
 
     @Before
     public void setUp() {
