@@ -45,7 +45,7 @@ public class GrapeApiTest {
     }
 
     @Test
-    public void testGrapeRipeness() {
+    public void testGrapeApi() {
 
         addGrape(GRAPE_NAME, GRAPE_QUANTITY, GRAPE_AGE, GRAPE_RIPENESS);
         LOGGER.info("Grape created.");

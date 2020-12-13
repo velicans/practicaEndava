@@ -28,11 +28,10 @@ public class MustApiTest {
 
     public Response response;
 
-    public static final String GRAPE_NAME = "sorinTest7"; // schimba valoarea pentru a avea un nou tip de strugure
+    public static final String MUST_NAME = "sorinTest"; // schimba valoarea pentru a avea un nou tip de strugure
 
-    public static final float GRAPE_QUANTITY = 12;
-    public static final int GRAPE_AGE = 5;
-    public static final float GRAPE_RIPENESS = 99; // daca valoarea este pe 87.0 o sa avem butonul "pick & crush grapes"
+    public static final float Must_QUANTITY = 12;
+    public static final String MUST_TYPE = "cola";
 
     @Before
     public void setUp() {
@@ -45,22 +44,22 @@ public class MustApiTest {
     }
 
     @Test
-    public void testGrapeRipeness() {
+    public void testMustApi() {
 
-        addGrape(GRAPE_NAME, GRAPE_QUANTITY, GRAPE_AGE, GRAPE_RIPENESS);
-        LOGGER.info("Grape created.");
+        addMust(MUST_NAME, Must_QUANTITY, MUST_TYPE);
+        LOGGER.info("Must created.");
 
-        getGrapes();
+        getMust();
 
-        String id = getGrapeId(GRAPE_NAME);
-        LOGGER.info("Grape id is:" + id);
+        String id = getGrapeId(MUST_NAME);
+        LOGGER.info("Must id is:" + id);
         assertThat("", id, not(isEmptyOrNullString()));
 
-        deleteGrape(id);
-        LOGGER.info("Grape deleted.");
-        getGrapes();
+        deleteMust(id);
+        LOGGER.info("Must deleted.");
+        getMust();
 
-        assertThat("", isGrapeAvailable(GRAPE_NAME), is(false));
+        assertThat("", isGrapeAvailable(MUST_NAME), is(false));
     }
 
     private String getGrapeId(String grapeName) {
@@ -73,46 +72,46 @@ public class MustApiTest {
         return JsonPath.with(response.prettyPrint()).get("name").toString().contains(grapeName);
     }
 
-    public void addGrape(String name, float quantity, int age, float ripeness) {
+    public void addMust(String name, float quantity, String type) {
 
         Map<String, Object> quantityMap = new HashMap<>();
         quantityMap.put("value", quantity);
-        quantityMap.put("unit", "rows");
+        quantityMap.put("unit", "liters");
 
         Map<String, Object> bodyMap = new HashMap<>();
         bodyMap.put("name", name);
-        bodyMap.put("quantity", quantityMap);
-        bodyMap.put("age", age);
-        bodyMap.put("ripeness", ripeness);
+        bodyMap.put("volume", quantityMap);
+        bodyMap.put("type", type);
 
 
         response = SerenityRest.given()
                 .contentType(ContentType.JSON)
                 .body(bodyMap)
                 .when()
-                .post("https://endavawineapp.azurewebsites.net/grapes");
+                .post("https://endavawineapp.azurewebsites.net/must");
 
         assertThat(response.getStatusCode(), is(200));
 
     }
 
-    public void deleteGrape(String id) {
+    public void deleteMust(String id) {
 
         response = SerenityRest.given()
                 .contentType(ContentType.JSON)
+                .body("[" + id + "]")
                 .when()
-                .delete("https://endavawineapp.azurewebsites.net/grapes/" + id);
+                .delete("https://endavawineapp.azurewebsites.net/must/");
 
         assertThat(response.getStatusCode(), is(200));
 
     }
 
-    public void getGrapes() {
+    public void getMust() {
 
         response = SerenityRest.given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("https://endavawineapp.azurewebsites.net/grapes");
+                .get("https://endavawineapp.azurewebsites.net/must");
 
         assertThat(response.getStatusCode(), is(200));
 

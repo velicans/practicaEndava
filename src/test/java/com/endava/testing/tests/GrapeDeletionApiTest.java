@@ -39,7 +39,7 @@ public class GrapeDeletionApiTest {
     }
 
     @Test
-    public void testGrapeRipeness() {
+    public void testGrapeDeletion() {
 
         while (isGrapeAvailable(GRAPE_NAME)) {
             deleteGrape(getGrapeId(GRAPE_NAME));
