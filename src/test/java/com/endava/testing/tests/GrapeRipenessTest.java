@@ -22,7 +22,6 @@ import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 @RunWith(SerenityRunner.class)
 @WithTag("UI")
@@ -39,10 +38,10 @@ public class GrapeRipenessTest {
 
     public static final By TABLE = By.cssSelector("table.App-table tbody");
 
-    public static final String GRAPE_NAME = "strugureSorin"; // schimba valoarea pentru a avea un nou tip de strugure
-    public static final String GRAPE_QUANTITY = "12.0";
-    public static final String GRAPE_AGE = "12";
-    public static final String GRAPE_RIPENESS = "88.0"; // daca valoarea este pe 87.0 o sa avem butonul "pick & crush grapes"
+    public static final String GRAPE_NAME = "strugureSorin2"; // schimba valoarea pentru a avea un nou tip de strugure
+    public static final float GRAPE_QUANTITY = 12;
+    public static final int GRAPE_AGE = 12;
+    public static final float GRAPE_RIPENESS = 88; // daca valoarea este pe 87.0 o sa avem butonul "pick & crush grapes"
 
     @Managed(driver = "chrome")
     WebDriver driver;
@@ -79,27 +78,29 @@ public class GrapeRipenessTest {
 
     @Test
     public void testGrapeRipeness() {
-        sleep(1);
+
+        selectFromMenu("Must");
+        int mustCount = getTypeCount();
+        float mustVolume = getVolume();
+
         selectFromMenu("Wines");
-
-        sleep(1);
-
-        assertThat(getWinesNumber(), greaterThanOrEqualTo(6));
-        // assertTrue(getWinesNumber() >= 7);
-        LOGGER.info("Wines: " + getWinesNumber());
-
-        assertThat(getVolume(), greaterThanOrEqualTo(2696));
-        LOGGER.info("Volume: " + getVolume());
+        int wineCount = getTypeCount();
+        int wineVolume = (int) getVolume();
 
         selectFromMenu("Grapes");
+        clickCrushButton(GRAPE_NAME);
+        sleep(1);
 
-        clickButton(GRAPE_NAME);
+        assertThat(getTypeCount(), is(mustCount + 1));
+        assertThat(getVolume(), is(mustVolume + (GRAPE_QUANTITY * 50)));
 
-        sleep(3);
+        selectMust(GRAPE_NAME);
+        clickFerment();
+        sleep(1);
 
-        assertThat("We are not on must page, as expected.", verifyThatWeAreOnMust(), is(true));
-
-        LOGGER.info("Button was clicked.");
+        assertThat(getTypeCount(), is(wineCount + 1));
+        assertThat(getTypeCount(), is(wineCount + 1));
+        sleep(1);
     }
 
     private boolean verifyThatWeAreOnMust() {
@@ -107,14 +108,14 @@ public class GrapeRipenessTest {
         return driver.getCurrentUrl().contains("must");
     }
 
-    private int getVolume() {
+    private float getVolume() {
 
         String text = driver.findElement(WINES_VOLUMES).getText();
 
-        return (int) Double.parseDouble(StringUtils.substringBetween(text, " "));
+        return Float.parseFloat(StringUtils.substringBetween(text, ": ", " liters"));
     }
 
-    private int getWinesNumber() {
+    private int getTypeCount() {
 
         String text = driver.findElement(WINES_TYPES).getText();
 
@@ -136,7 +137,7 @@ public class GrapeRipenessTest {
         }
     }
 
-    private void clickButton(String grapeName) {
+    private void clickCrushButton(String grapeName) {
 
         WebElement table = driver.findElement(TABLE);
         List<WebElement> rows = table.findElements(By.tagName("tr"));
@@ -147,6 +148,26 @@ public class GrapeRipenessTest {
                     row.findElement(By.tagName("button")).click();
                 }
             }
+        }
+    }
+
+    private void selectMust(String grapeName) {
+
+        WebElement table = driver.findElement(TABLE);
+        List<WebElement> rows = table.findElements(By.tagName("tr"));
+
+        for (WebElement row : rows) {
+            if (row.findElement(By.cssSelector("td:nth-child(2)")).getText().contains(grapeName)) {
+                if (row.findElement(By.cssSelector("input[type=checkbox]")).isDisplayed()) {
+                    row.findElement(By.cssSelector("input[type=checkbox]")).click();
+                }
+            }
+        }
+    }
+
+    private void clickFerment() {
+        if (driver.findElement(By.cssSelector("button")).isDisplayed()) {
+            driver.findElement(By.cssSelector("button")).click();
         }
     }
 }
