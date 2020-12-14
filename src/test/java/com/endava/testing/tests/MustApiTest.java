@@ -18,18 +18,17 @@ import static org.hamcrest.Matchers.not;
 
 @RunWith(SerenityRunner.class)
 @WithTag("API")
-public class GrapeApiTest {
+public class MustApiTest {
 
     public final Logger LOGGER = Logger.getLogger(getClass().getName());
 
     @Steps
     VineyardApiSteps vineyardApiSteps;
-    
-    public static final String GRAPE_NAME = "sorinTest7"; // schimba valoarea pentru a avea un nou tip de strugure
 
-    public static final float GRAPE_QUANTITY = 12;
-    public static final int GRAPE_AGE = 5;
-    public static final float GRAPE_RIPENESS = 99; // daca valoarea este pe 87.0 o sa avem butonul "pick & crush grapes"
+    public static final String MUST_NAME = "sorinTest"; // schimba valoarea pentru a avea un nou tip de strugure
+
+    public static final float Must_QUANTITY = 12;
+    public static final String MUST_TYPE = "cola";
 
     @Before
     public void setUp() {
@@ -42,22 +41,22 @@ public class GrapeApiTest {
     }
 
     @Test
-    public void testGrapeApi() {
+    public void testMustApi() {
 
-        vineyardApiSteps.addGrape(GRAPE_NAME, GRAPE_QUANTITY, GRAPE_AGE, GRAPE_RIPENESS);
-        LOGGER.info("Grape created.");
+        vineyardApiSteps.addMust(MUST_NAME, Must_QUANTITY, MUST_TYPE);
+        LOGGER.info("Must created.");
 
-        vineyardApiSteps.getGrapes();
+        vineyardApiSteps.getMust();
 
-        String id = vineyardApiSteps.getGrapeId(GRAPE_NAME);
-        LOGGER.info("Grape id is:" + id);
+        String id = vineyardApiSteps.getMustId(MUST_NAME);
+        LOGGER.info("Must id is:" + id);
         assertThat("", id, not(isEmptyOrNullString()));
 
-        vineyardApiSteps.deleteGrape(id);
-        LOGGER.info("Grape deleted.");
-        vineyardApiSteps.getGrapes();
+        vineyardApiSteps.deleteMust(id);
+        LOGGER.info("Must deleted.");
+        vineyardApiSteps.getMust();
 
-        assertThat("", vineyardApiSteps.isGrapeAvailable(GRAPE_NAME), is(false));
+        assertThat("", vineyardApiSteps.isMustAvailable(MUST_NAME), is(false));
     }
 
 
