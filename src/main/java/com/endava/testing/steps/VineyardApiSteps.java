@@ -1,5 +1,6 @@
 package com.endava.testing.steps;
 
+import com.endava.testing.utils.CONST;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
@@ -13,6 +14,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class VineyardApiSteps {
+
 
     public Response response;
 
@@ -46,7 +48,7 @@ public class VineyardApiSteps {
                 .contentType(ContentType.JSON)
                 .body(bodyMap)
                 .when()
-                .post("https://endavawineapp.azurewebsites.net/grapes");
+                .post(CONST.GRAPE_API_URL);
 
         assertThat(response.getStatusCode(), is(200));
 
@@ -58,7 +60,7 @@ public class VineyardApiSteps {
         response = SerenityRest.given()
                 .contentType(ContentType.JSON)
                 .when()
-                .delete("https://endavawineapp.azurewebsites.net/grapes/" + id);
+                .delete(CONST.GRAPE_API_URL + id);
 
         assertThat(response.getStatusCode(), is(200));
 
@@ -70,7 +72,7 @@ public class VineyardApiSteps {
         response = SerenityRest.given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("https://endavawineapp.azurewebsites.net/grapes");
+                .get(CONST.GRAPE_API_URL);
 
         assertThat(response.getStatusCode(), is(200));
 
@@ -106,7 +108,7 @@ public class VineyardApiSteps {
                 .contentType(ContentType.JSON)
                 .body(bodyMap)
                 .when()
-                .post("https://endavawineapp.azurewebsites.net/must");
+                .post(CONST.MUST_API_URL);
 
         assertThat(response.getStatusCode(), is(200));
 
@@ -119,7 +121,7 @@ public class VineyardApiSteps {
                 .contentType(ContentType.JSON)
                 .body("[" + id + "]")
                 .when()
-                .delete("https://endavawineapp.azurewebsites.net/must/");
+                .delete(CONST.MUST_API_URL);
 
         assertThat(response.getStatusCode(), is(200));
 
@@ -131,7 +133,7 @@ public class VineyardApiSteps {
         response = SerenityRest.given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("https://endavawineapp.azurewebsites.net/must");
+                .get(CONST.MUST_API_URL);
 
         assertThat(response.getStatusCode(), is(200));
 

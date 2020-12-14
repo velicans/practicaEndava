@@ -2,6 +2,7 @@ package com.endava.testing.tests;
 
 import com.endava.testing.steps.VineyardApiSteps;
 import com.endava.testing.steps.VineyardUiSteps;
+import com.endava.testing.utils.CONST;
 import com.endava.testing.utils.Utils;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.thucydides.core.annotations.Steps;
@@ -36,15 +37,15 @@ public class GrapeRipenessTest extends UiBaseTest {
     @Test
     public void testGrapeRipeness() {
 
-        vineyardUiSteps.selectFromMenu("Must");
+        vineyardUiSteps.selectFromMenu(CONST.MENU_MUST);
         int mustCount = vineyardUiSteps.getMustTypeCount();
         float mustVolume = vineyardUiSteps.getMustVolume();
 
-        vineyardUiSteps.selectFromMenu("Wines");
+        vineyardUiSteps.selectFromMenu(CONST.MENU_WINE);
         int wineCount = vineyardUiSteps.getWineTypeCount();
         int wineVolume = (int) vineyardUiSteps.getWineVolume();
 
-        vineyardUiSteps.selectFromMenu("Grapes");
+        vineyardUiSteps.selectFromMenu(CONST.MENU_GRAPE);
         vineyardUiSteps.clickCrushButton(GRAPE_NAME);
         Utils.sleep(3);
 
