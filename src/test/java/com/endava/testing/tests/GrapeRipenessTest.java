@@ -39,7 +39,7 @@ public class GrapeRipenessTest {
 
     public static final By TABLE = By.cssSelector("table.App-table tbody");
 
-    public static final String GRAPE_NAME = "strugureSorin"; // schimba valoarea pentru a avea un nou tip de strugure
+    public static final String GRAPE_NAME = "strugureoteleafelix"; // schimba valoarea pentru a avea un nou tip de strugure
     public static final String GRAPE_QUANTITY = "12.0";
     public static final String GRAPE_AGE = "12";
     public static final String GRAPE_RIPENESS = "88.0"; // daca valoarea este pe 87.0 o sa avem butonul "pick & crush grapes"
