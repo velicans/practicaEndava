@@ -1,197 +1,67 @@
 package com.endava.testing.tests;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
+import com.endava.testing.steps.VineyardApiSteps;
+import com.endava.testing.steps.VineyardUiSteps;
+import com.endava.testing.utils.Utils;
 import net.serenitybdd.junit.runners.SerenityRunner;
-import net.serenitybdd.rest.SerenityRest;
-import net.thucydides.core.annotations.Managed;
+import net.thucydides.core.annotations.Steps;
 import net.thucydides.core.annotations.WithTag;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.RemoteWebDriver;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SerenityRunner.class)
 @WithTag("UI")
-public class GrapeRipenessTest {
-
-    public final Logger LOGGER = Logger.getLogger(getClass().getName());
-
-    public static final String APP_URL = "https://wineappui.azurewebsites.net/";
-
-    public static final By MENU = By.cssSelector("nav");
-    public static final By WINES_TYPES = By.cssSelector("li:nth-child(1)");
-    public static final By WINES_VOLUMES = By.cssSelector("li:nth-child(2)");
-
-    public static final By TABLE = By.cssSelector("table.App-table tbody");
+public class GrapeRipenessTest extends UiBaseTest {
 
     public static final String GRAPE_NAME = "strugureSorin2"; // schimba valoarea pentru a avea un nou tip de strugure
     public static final float GRAPE_QUANTITY = 12;
     public static final int GRAPE_AGE = 12;
     public static final float GRAPE_RIPENESS = 88; // daca valoarea este pe 87.0 o sa avem butonul "pick & crush grapes"
 
-    @Managed
-    private static RemoteWebDriver driver;
+    @Steps
+    VineyardUiSteps vineyardUiSteps;
+
+    @Steps
+    VineyardApiSteps vineyardApiSteps;
 
     @Before
     public void setUp() {
 
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver(getChromeOption());
-        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-        driver.manage().window().maximize();
 
-        Map<String, Object> quantity = new HashMap<>();
-        quantity.put("value", GRAPE_QUANTITY);
-        quantity.put("unit", "rows");
+        vineyardApiSteps.addGrape(GRAPE_NAME, GRAPE_QUANTITY, GRAPE_AGE, GRAPE_RIPENESS);
 
-        Map<String, Object> bodyMap = new HashMap<>();
-        bodyMap.put("name", GRAPE_NAME);
-        bodyMap.put("quantity", quantity);
-        bodyMap.put("age", GRAPE_AGE);
-        bodyMap.put("ripeness", GRAPE_RIPENESS);
-
-
-        Response response = SerenityRest.given()
-                .contentType(ContentType.JSON)
-                .body(bodyMap)
-                .when()
-                .post("https://endavawineapp.azurewebsites.net/grapes");
-
-        System.out.println(response.prettyPrint());
-
-        driver.get(APP_URL);
-    }
-
-    @After
-    public void close() {
-        driver.quit();
     }
 
     @Test
     public void testGrapeRipeness() {
 
-        selectFromMenu("Must");
-        int mustCount = getTypeCount();
-        float mustVolume = getVolume();
+        vineyardUiSteps.selectFromMenu("Must");
+        int mustCount = vineyardUiSteps.getMustTypeCount();
+        float mustVolume = vineyardUiSteps.getMustVolume();
 
-        selectFromMenu("Wines");
-        int wineCount = getTypeCount();
-        int wineVolume = (int) getVolume();
+        vineyardUiSteps.selectFromMenu("Wines");
+        int wineCount = vineyardUiSteps.getWineTypeCount();
+        int wineVolume = (int) vineyardUiSteps.getWineVolume();
 
-        selectFromMenu("Grapes");
-        clickCrushButton(GRAPE_NAME);
-        sleep(2);
+        vineyardUiSteps.selectFromMenu("Grapes");
+        vineyardUiSteps.clickCrushButton(GRAPE_NAME);
+        Utils.sleep(3);
 
-        assertThat(getTypeCount(), is(mustCount + 1));
-        assertThat(getVolume(), is(mustVolume + (GRAPE_QUANTITY * 50)));
+        float mustQuantity = GRAPE_QUANTITY * 50;
+        vineyardUiSteps.verifyMustCount(mustCount + 1);
+        // vineyardUiSteps.verifyMustVolume(mustQuantity);
 
-        selectMust(GRAPE_NAME);
-        clickFerment();
-        sleep(1);
 
-        assertThat(getTypeCount(), is(wineCount + 1));
-        assertThat(getTypeCount(), is(wineCount + 1));
-        sleep(1);
+        vineyardUiSteps.selectMust(GRAPE_NAME);
+        vineyardUiSteps.clickFerment();
+        Utils.sleep(3);
+
+        double wineQuantity = mustQuantity / 1.5;
+        vineyardUiSteps.verifyWineTypeCount(wineCount + 1);
+        // vineyardUiSteps.verifyWineQuantity(wineQuantity);
+        Utils.sleep(3);
     }
 
-    private boolean verifyThatWeAreOnMust() {
 
-        return driver.getCurrentUrl().contains("must");
-    }
-
-    private float getVolume() {
-
-        String text = driver.findElement(WINES_VOLUMES).getText();
-
-        return Float.parseFloat(StringUtils.substringBetween(text, ": ", " liters"));
-    }
-
-    private int getTypeCount() {
-
-        String text = driver.findElement(WINES_TYPES).getText();
-
-        return Integer.parseInt(text.replaceAll("\\D+", ""));
-    }
-
-    private void selectFromMenu(String linkText) {
-
-        driver.findElement(MENU)
-                .findElement(By.linkText(linkText)).click();
-    }
-
-    private void sleep(int seconds) {
-
-        try {
-            Thread.sleep(seconds * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void clickCrushButton(String grapeName) {
-
-        WebElement table = driver.findElement(TABLE);
-        List<WebElement> rows = table.findElements(By.tagName("tr"));
-
-        for (WebElement row : rows) {
-            if (row.findElement(By.cssSelector("td:nth-child(1)")).getText().contains(grapeName)) {
-                if (row.findElement(By.tagName("button")).isDisplayed()) {
-                    row.findElement(By.tagName("button")).click();
-                }
-            }
-        }
-    }
-
-    private void selectMust(String grapeName) {
-
-        WebElement table = driver.findElement(TABLE);
-        List<WebElement> rows = table.findElements(By.tagName("tr"));
-
-        for (WebElement row : rows) {
-            if (row.findElement(By.cssSelector("td:nth-child(2)")).getText().contains(grapeName)) {
-                if (row.findElement(By.cssSelector("input[type=checkbox]")).isDisplayed()) {
-                    row.findElement(By.cssSelector("input[type=checkbox]")).click();
-                }
-            }
-        }
-    }
-
-    private void clickFerment() {
-        if (driver.findElement(By.cssSelector("button")).isDisplayed()) {
-            driver.findElement(By.cssSelector("button")).click();
-        }
-    }
-
-    protected static ChromeOptions getChromeOption() {
-
-        ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.addArguments("--start-maximized");
-
-        if (!SystemUtils.IS_OS_WINDOWS && !SystemUtils.IS_OS_MAC) {
-            chromeOptions.addArguments("--no-sandbox"); // needed for Ubuntu
-            chromeOptions.addArguments("--headless");
-            chromeOptions.addArguments("window-size=1920,1080");
-        }
-
-        return chromeOptions;
-
-    }
 }
