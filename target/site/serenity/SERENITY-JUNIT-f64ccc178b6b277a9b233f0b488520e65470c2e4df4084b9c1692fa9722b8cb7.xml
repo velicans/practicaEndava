@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?><testsuite errors="1" failures="0" name="com.endava.testing.tests.MustApiTest" skipped="0" tests="1" time="10.23" timestamp="2020-12-14 12:53:54"><testcase classname="com.endava.testing.tests.MustApiTest" name="Test must"><error type="java.lang.NullPointerException"/><system-err>null&#13;
+com.endava.testing.tests.MustApiTest.getMustId(MustApiTest.java:77)&#13;
+com.endava.testing.tests.MustApiTest.testMust(MustApiTest.java:64)&#13;
+</system-err></testcase></testsuite>
