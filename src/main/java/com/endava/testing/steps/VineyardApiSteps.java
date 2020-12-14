@@ -85,6 +85,7 @@ public class VineyardApiSteps {
     @Step("I check if must is available.")
     public Boolean isMustAvailable(String grapeName) {
 
+        getMust();
         return JsonPath.with(response.prettyPrint()).get("name").toString().contains(grapeName);
     }
 
