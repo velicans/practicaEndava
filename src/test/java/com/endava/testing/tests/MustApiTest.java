@@ -4,6 +4,7 @@ import com.endava.testing.steps.VineyardApiSteps;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.thucydides.core.annotations.Steps;
 import net.thucydides.core.annotations.WithTag;
+import net.thucydides.core.annotations.WithTags;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +18,10 @@ import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(SerenityRunner.class)
-@WithTag("API")
+@WithTags({
+        @WithTag("API"),
+        @WithTag("must")
+})
 public class MustApiTest {
 
     public final Logger LOGGER = Logger.getLogger(getClass().getName());

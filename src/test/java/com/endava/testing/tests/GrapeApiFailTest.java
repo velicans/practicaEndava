@@ -22,7 +22,7 @@ import static org.hamcrest.Matchers.not;
         @WithTag("API"),
         @WithTag("grape")
 })
-public class GrapeApiTest {
+public class GrapeApiFailTest {
 
     public final Logger LOGGER = Logger.getLogger(getClass().getName());
 
@@ -61,7 +61,7 @@ public class GrapeApiTest {
         LOGGER.info("Grape deleted.");
         vineyardApiSteps.getGrapes();
 
-        assertThat("", vineyardApiSteps.isGrapeAvailable(GRAPE_NAME), is(false));
+        assertThat("", vineyardApiSteps.isGrapeAvailable(GRAPE_NAME), is(true));
     }
 
 

@@ -4,12 +4,17 @@ import com.endava.testing.steps.VineyardApiSteps;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.thucydides.core.annotations.Steps;
 import net.thucydides.core.annotations.WithTag;
+import net.thucydides.core.annotations.WithTags;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(SerenityRunner.class)
-@WithTag("API")
+@WithTags({
+        @WithTag("API"),
+        @WithTag("grape"),
+        @WithTag("must")
+})
 @Ignore
 public class GrapeDeletionApiTest {
 
