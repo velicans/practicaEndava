@@ -7,6 +7,7 @@ import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -22,6 +23,7 @@ import static org.hamcrest.Matchers.not;
         @WithTag("API"),
         @WithTag("grape")
 })
+@Ignore
 public class GrapeApiFailTest {
 
     public final Logger LOGGER = Logger.getLogger(getClass().getName());
